@@ -1,0 +1,59 @@
+-- Initialize game agent
+local Agent = {
+    id = 1,
+    energyThreshold = 5,
+    attackRange = 1,
+    laserEnergyCost = 20,
+    shieldEnergyCost = 30,
+    grabEnergyCost = 25,
+    stealEnergyCost = 15
+}
+
+-- Function to check if a player is within attack range
+local function isPlayerWithinRange(player1, player2)
+    local distance = math.abs(player1.x - player2.x) + math.abs(player1.y - player2.y)
+    return distance <= Agent.attackRange
+end
+
+-- Function to shoot lasers at opponents
+local function shootLaser(gameState)
+    local player = gameState.Players[Agent.id]
+
+    for playerId, state in pairs(gameState.Players) do
+        if playerId ~= Agent.id and isPlayerWithinRange(player, state) then
+            if player.energy >= Agent.laserEnergyCost then
+                print("Player " .. Agent.id .. " shoots laser at Player " .. playerId .. "!")
+                return true
+            else
+                -- Insufficient energy to shoot laser
+                return false
+            end
+        end
+    end
+
+    -- No opponent within attack range
+    return false
+end
+
+-- Function to activate shield if enough energy
+local function activateShield()
+    local player = LatestGameState.Players[Agent.id]
+    if player.energy >= Agent.shieldEnergyCost then
+        print("Player " .. Agent.id .. " activates shield!")
+        return true
+    else
+        -- Insufficient energy to activate shield
+        return false
+    end
+end
+
+-- Example usage
+local gameState = {
+    Players = {
+        [1] = { x = 0, y = 0, energy = 25 },
+        [2] = { x = 2, y = 1, energy = 30 }
+    }
+}
+
+shootLaser(gameState)
+activateShield()
